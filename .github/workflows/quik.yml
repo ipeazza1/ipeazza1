@@ -14,13 +14,7 @@ jobs:
           Write-Host "Explorer running: $(if ($explorer) {'YES'} else {'NO'})"
           
           # Check Screen Resolution
-          $code = @"
-          using System;
-          using System.Runtime.InteropServices;
-          public class Check {
-            [DllImport("user32.dll")]
-            public static extern int GetSystemMetrics(int nIndex);
-          }"@
+          $code = 'using System; using System.Runtime.InteropServices; public class Check { [DllImport("user32.dll")] public static extern int GetSystemMetrics(int nIndex); }'
           Add-Type -TypeDefinition $code
           $w = [Check]::GetSystemMetrics(0)
           $h = [Check]::GetSystemMetrics(1)
