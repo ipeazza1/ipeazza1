@@ -1,0 +1,36 @@
+name: Quick GUI Check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - name: Quick GUI Check
+        run: |
+          # Check Explorer
+          $explorer = Get-Process explorer -ErrorAction SilentlyContinue
+          Write-Host "Explorer running: $(if ($explorer) {'YES'} else {'NO'})"
+          
+          # Check Screen Resolution
+          $code = @"
+          using System;
+          using System.Runtime.InteropServices;
+          public class Check {
+            [DllImport("user32.dll")]
+            public static extern int GetSystemMetrics(int nIndex);
+          }"@
+          Add-Type -TypeDefinition $code
+          $w = [Check]::GetSystemMetrics(0)
+          $h = [Check]::GetSystemMetrics(1)
+          Write-Host "Screen Resolution: $w x $h"
+          
+          if ($explorer -and $w -gt 0) {
+            Write-Host "GUI IS AVAILABLE"
+          } else {
+            Write-Host "GUI NOT AVAILABLE"
+          }
+          
+          # Test PyAutoGUI
+          python -c "import pyautogui; print('PyAutoGUI works!', pyautogui.size())" 2>&1
